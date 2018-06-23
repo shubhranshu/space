@@ -1,0 +1,44 @@
+{
+  "name": "space",
+  "version": "0.0.1-alpha",
+  "description": "Package for all things space",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "babel ./src --out-dir ./dist",
+    "clirun": "yarn build && node ./dist/index.js",
+    "devRun" :"cross-env NODE_ENV=debug yarn clirun",
+    "watchbuild": "nodemon --exec \"yarn build\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shubhranshu/space.git"
+  },
+  "keywords": [
+    "space"
+  ],
+  "author": "Shub",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/shubhranshu/space/issues"
+  },
+  "homepage": "https://github.com/shubhranshu/space#readme",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "commander": "^2.15.1",
+    "inquirer": "^6.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "cross-env": "^5.2.0",
+    "nodemon": "^1.17.5"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "dist/*",
+      "data/*"
+    ],
+    "delay": "500"
+  }
+}
