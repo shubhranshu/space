@@ -6,7 +6,7 @@
   "scripts": {
     "build": "babel ./src --out-dir ./dist",
     "clirun": "yarn build && node ./dist/index.js",
-    "devrun" :"cross-env NODE_ENV=debug node ./dist/index.js",
+    "devrun": "cross-env NODE_ENV=debug node ./dist/index.js",
     "watchbuild": "nodemon --exec \"yarn build\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,7 +26,8 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "commander": "^2.15.1",
-    "inquirer": "^6.0.0"
+    "inquirer": "^6.0.0",
+    "telnet-client": "^0.15.5"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
