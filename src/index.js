@@ -83,19 +83,23 @@ function handleGeneric(objName, answers) {
   switch (answerValue) {
     case 'help':
       logd('Choice was help !');
-      startUp(2);
+      return startUp(2);
       break;
     case 'restart':
       logd('choice was restart !');
-      startUp(3);
+      return startUp(3);
       break;
     case 'quit':
       logd('Choice is to Quit !');
+      return false;
   }
+  return true;
 }
 
 function handleTargets(answers) {
-  logd('Handling targets');
+  if (handleGeneric(targetQuestions.name, answers)) {
+    logd('Handling targets');
+  }
 }
 
 function startUp(option) {
@@ -108,7 +112,7 @@ function startUp(option) {
     // this is the regular start !
   }
   inquirer.prompt(targetQuestions).then(answers => {
-    handleGeneric(targetQuestions.name, answers).then(handleTargets);
+    handleTargets(answers);
   });
 }
 
