@@ -3,37 +3,10 @@ import { resolve } from 'path';
 import { rejects } from 'assert';
 import chalk from 'chalk';
 
-var log = console.log;
-function logd(message, obj) {
-  if (process.env.NODE_ENV == 'debug') {
-    var header = +new Date() + ' : ';
+import { log, logd } from './common/logger';
+import Help from './common/help';
 
-    log(chalk.magenta(header + chalk.black(chalk.bgGreen(' ' + message + ' '))));
-    if (obj) {
-      log(chalk.cyan(JSON.stringify(obj, null, 4)));
-    }
-  }
-}
-// Prints some awesome ASCII art here
-function printArt() {
-  log('');
-  log('**************************************************************');
-  log('**************** Some badass ASCII art here ******************');
-  log('**************************************************************');
-  log('');
-}
-
-function printHelp() {
-  log('');
-  log(chalk.redBright('````````````````################################````````````````'));
-  log(chalk.redBright('````````````````################################````````````````'));
-  log(chalk.redBright('````````````````################################````````````````'));
-  log(chalk.redBright('````````````````###### Some help text here #####````````````````'));
-  log(chalk.redBright('````````````````################################````````````````'));
-  log(chalk.redBright('````````````````################################````````````````'));
-  log(chalk.redBright('````````````````################################````````````````'));
-  log('');
-}
+import SSD from './modules/ssd';
 
 var types = {
   input: 'input',
@@ -87,7 +60,7 @@ function handleGeneric(objName, answers) {
       break;
     case 'restart':
       logd('choice was restart !');
-      return startUp(3);
+      return startUp(1);
       break;
     case 'quit':
       logd('Choice is to Quit !');
@@ -99,15 +72,24 @@ function handleGeneric(objName, answers) {
 function handleTargets(answers) {
   if (handleGeneric(targetQuestions.name, answers)) {
     logd('Handling targets');
+    switch (answers.target) {
+      case 'SSD':
+        SSD.start();
+        break;
+      default:
+        log('You didnt select a target ! Restarting...');
+        startUp(2);
+    }
   }
 }
 
 function startUp(option) {
   switch (option) {
     case 1:
-      printArt();
+      console.clear();
+      Help.printArt();
     case 2:
-      printHelp();
+      Help.showHelp();
     case 3:
     // this is the regular start !
   }
