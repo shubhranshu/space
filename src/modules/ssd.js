@@ -1,26 +1,13 @@
-import { log, logd, logf, logp} from '../common/logger';
 import Telnet from 'telnet-client';
+
+import { log, logd, logf, logp } from '../common/logger';
+import Buffer from '../common/buffer';
 
 export const HorizonsTelnetParams = {
   host: 'horizons.jpl.nasa.gov',
   port: 6775,
   shellPrompt: 'Horizons',
   timeout: 1500
-};
-
-var buffer = '';
-
-const clearBuffer = () => {
-  log('Clearing buffer');
-  buffer = '';
-};
-
-const appendToBuffer = (data, max) => {
-  if (max) {
-  } else {
-    buffer += data.toString();
-    logp(buffer.length);
-  }
 };
 
 export class SSD {
@@ -47,17 +34,17 @@ export class SSD {
     };
 
     GetStream(HorizonsTelnetParams, (conn, stream) => {
+      let mbBuffer = new Buffer('Generic');
       let checkStreamForData = streamData => {
-        appendToBuffer(streamData);
-        if (buffer.indexOf('Horizons>') > 0) {
+        mbBuffer.append(streamData)
+        if (mbBuffer.contains('Horizons>')) {
           log('HORIZONS prompt reached');
-          clearBuffer();
+          mbBuffer.clear()
           log('Querying major bodies database');
           stream.write('MB\n');
-        } else if (buffer.endsWith('<cr>: ')) {
-          log('writing to file !');
-          logf(buffer, 'mb-raw.txt');
-          clearBuffer();
+          mbBuffer = new Buffer("MajorBody", 31000)
+        } else if (mbBuffer.endsWith('<cr>: ')) {
+          mbBuffer.toFile('mb-raw.txt');
         }
       };
 
