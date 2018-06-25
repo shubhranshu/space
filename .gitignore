@@ -3,3 +3,6 @@ dist
 
 # remove node_modules folder
 node_modules
+
+# exclude temp txt files
+data/temp/*.txt

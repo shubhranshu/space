@@ -1,105 +1,68 @@
-import { log, logd } from '../common/logger';
+import { log, logd, logf, logp} from '../common/logger';
 import Telnet from 'telnet-client';
 
 export const HorizonsTelnetParams = {
   host: 'horizons.jpl.nasa.gov',
   port: 6775,
   shellPrompt: 'Horizons',
-  timeout: 1500,
-  debug: true,
-  initialLFCR: true
+  timeout: 1500
 };
 
-export const HorizonsUrl = 'https://ssd.jpl.nasa.gov/horizons.cgi';
+var buffer = '';
 
-export const TargetBodyList = {
-  name: 'mb_list',
-  id: '2',
-  list: [
-    {
-      name: 'Sun and Planets',
-      value: 'planet'
-    },
-    {
-      name: 'Jovian Satellites',
-      value: 'js'
-    },
-    {
-      name: 'Saturnian Satellites',
-      value: 'ss'
-    },
-    {
-      name: 'Uranian Satellites',
-      value: 'us'
-    },
-    {
-      name: 'Neptunian Satellites',
-      value: 'ns'
-    },
-    {
-      name: 'Other Satellites',
-      value: 'os'
-    },
-    {
-      name: 'Spacecraft',
-      value: 'sc'
-    },
-    {
-      name: 'Dynamic Points',
-      value: 'dp'
-    }
-  ]
+const clearBuffer = () => {
+  log('Clearing buffer');
+  buffer = '';
+};
+
+const appendToBuffer = (data, max) => {
+  if (max) {
+  } else {
+    buffer += data.toString();
+    logp(buffer.length);
+  }
 };
 
 export class SSD {
   start() {
     log('Generating SSD Data');
-    log('onnecting to telnet');
-    let conn = new Telnet();
-    let params = {
-      host: 'horizons.jpl.nasa.gov',
-      port: 6775,
-      shellPrompt: 'Horizons> ',
-      timeout: 1500,
-      debug: true,
-      initialLFCR: true
+    log('Connecting to telnet');
+
+    // Get connection stream
+    let GetStream = (params, callback) => {
+      let conn = new Telnet();
+      conn.connect(params).then(
+        prompt => {
+          log('Connected to HORIZONS telnet, Executing Major body search');
+          conn.shell((err, stream) => {
+            log('Shell Acquired !');
+            callback(conn, stream);
+          });
+        },
+        err => {
+          log('There was an error connection to the telnet client');
+          throw err;
+        }
+      );
     };
 
-    let streamBuffer = '';
-    let bufferSink = data => {
-      streamBuffer += data.toString();
-    };
+    GetStream(HorizonsTelnetParams, (conn, stream) => {
+      let checkStreamForData = streamData => {
+        appendToBuffer(streamData);
+        if (buffer.indexOf('Horizons>') > 0) {
+          log('HORIZONS prompt reached');
+          clearBuffer();
+          log('Querying major bodies database');
+          stream.write('MB\n');
+        } else if (buffer.endsWith('<cr>: ')) {
+          log('writing to file !');
+          logf(buffer, 'mb-raw.txt');
+          clearBuffer();
+        }
+      };
 
-    conn.connect(HorizonsTelnetParams).then(
-      prompt => {
-        log('Connected to HORIZONS telnet, Executing Major body search');
-        conn.shell((err, stream) => {
-          log('Shell Acquired !');
-          stream.on('data', bufferSink);
-
-          let WaitingForDelimiter = () => {
-            setTimeout(() => {
-              if (streamBuffer.indexOf('Select ...') > 0) {
-                log(streamBuffer);
-                log('closing the stream now !');
-                conn.end();
-              }
-              WaitingForDelimiter();
-            }, 300);
-          };
-
-          setTimeout(() => {
-            log('Querying major bodies database');
-            stream.write('MB\n');
-            streamBuffer = '';
-            WaitingForDelimiter();
-          }, 2000);
-        });
-      },
-      err => {
-        log('There was an error connection to the telnet client');
-      }
-    );
+      stream.on('data', checkStreamForData);
+    });
   }
 }
 
