@@ -11,40 +11,41 @@ export const HorizonsTelnetParams = {
 };
 
 export class SSD {
-  start() {
-    log('Generating SSD Data');
+  getStream(params, callback) {
     log('Connecting to telnet');
-
-    // Get connection stream
-    let GetStream = (params, callback) => {
-      let conn = new Telnet();
-      conn.connect(params).then(
-        prompt => {
-          log('Connected to HORIZONS telnet, Executing Major body search');
-          conn.shell((err, stream) => {
-            log('Shell Acquired !');
-            callback(conn, stream);
-          });
-        },
-        err => {
-          log('There was an error connection to the telnet client');
-          throw err;
-        }
-      );
-    };
-
-    GetStream(HorizonsTelnetParams, (conn, stream) => {
+    let conn = new Telnet();
+    conn.connect(params).then(
+      prompt => {
+        log('Connected to HORIZONS telnet, Executing Major body search');
+        conn.shell((err, stream) => {
+          log('Shell Acquired !');
+          callback(conn, stream);
+        });
+      },
+      err => {
+        log('There was an error connection to the telnet client');
+        throw err;
+      }
+    );
+  }
+  getMajorBodiesList() {
+    log('Generating SSD Data');
+    this.getStream(HorizonsTelnetParams, (conn, stream) => {
       let mbBuffer = new Buffer('Generic');
+
       let checkStreamForData = streamData => {
-        mbBuffer.append(streamData)
+        mbBuffer.append(streamData);
         if (mbBuffer.contains('Horizons>')) {
           log('HORIZONS prompt reached');
-          mbBuffer.clear()
+          mbBuffer.clear();
           log('Querying major bodies database');
           stream.write('MB\n');
-          mbBuffer = new Buffer("MajorBody", 31000)
+          mbBuffer = new Buffer('MajorBody', 30000);
         } else if (mbBuffer.endsWith('<cr>: ')) {
           mbBuffer.toFile('mb-raw.txt');
+          stream.end();
+          conn.end();
+          logd('Stream ended');
         }
       };
 

@@ -1,4 +1,4 @@
-import { log, logf, logd } from './logger';
+import { log, logf, logd, logp } from './logger';
 
 export default class Buffer {
   constructor(name, max) {
@@ -12,7 +12,11 @@ export default class Buffer {
   }
   append(data) {
     this._buffer += data.toString();
-    logd(this._buffer.length);
+    let len = this._buffer.length;
+    if (this.expectedMax) {
+      logp(len, this.expectedMax);
+    }
+    logd(len);
   }
   contains(str) {
     return this._buffer.indexOf(str) > 0;

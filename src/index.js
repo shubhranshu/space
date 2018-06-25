@@ -5,8 +5,7 @@ import chalk from 'chalk';
 
 import { log, logd } from './common/logger';
 import Help from './common/help';
-
-import SSD from './modules/ssd';
+import ssd from './modules/ssd';
 
 var types = {
   input: 'input',
@@ -74,7 +73,7 @@ function handleTargets(answers) {
     logd('Handling targets');
     switch (answers.target) {
       case 'SSD':
-        SSD.start();
+        ssd.getMajorBodiesList()
         break;
       default:
         log('You didnt select a target ! Restarting...');

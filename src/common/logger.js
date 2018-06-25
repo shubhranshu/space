@@ -40,6 +40,12 @@ export const logf = (message, fileName) => {
 };
 
 // Log progress
-export const logp = message => {
-  log(message);
+export const logp = (current, max) => {
+  let progresMsgStart = 'Downloading [';
+  let progresMsgEnd = ']';
+  let usableLength = printWidth - GetDateHeader().length - progresMsgStart.length - progresMsgEnd.length;
+  let progress = (current / max) * usableLength;
+  progress = progress > usableLength ? usableLength-1 : progress;
+  let progresMsg = progresMsgStart + '*'.repeat(progress) + ' '.repeat(usableLength - progress) + progresMsgEnd;
+  log(chalk.yellow(progresMsg));
 };
