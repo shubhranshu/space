@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import fs from 'fs';
 
 const printWidth = 120;
 
@@ -31,12 +30,6 @@ export const logd = (message, obj) => {
       log(chalk.cyan(JSON.stringify(obj, null, 4)));
     }
   }
-};
-
-// Log to file
-export const logf = (message, fileName) => {
-  let msgObj = stringify(message);
-  fs.writeFileSync('./data/temp/' + fileName, msgObj);
 };
 
 // Log progress

@@ -1,7 +1,8 @@
-import { log, logf, logd, logp } from './logger';
+import { log, logd, logp } from './logger';
+import { writeFileToTemp } from './fsHelper';
 import chalk from 'chalk';
 
-export default class Buffer {
+export default class TelnetBuffer {
   constructor(name, max) {
     this.name = name;
     this.expectedMax = max;
@@ -30,7 +31,7 @@ export default class Buffer {
   }
   toFile(fileName) {
     log('Writing raw to file ! : ' + chalk.green(fileName));
-    logf(this.getData(), fileName);
+    writeFileToTemp(this.getData(), fileName);
     this.clear();
   }
 }

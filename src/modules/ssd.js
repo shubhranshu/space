@@ -3,7 +3,7 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 
 import { log, logd } from '../common/logger';
-import Buffer from '../common/buffer';
+import TelnetBuffer from '../common/telnetBuffer';
 import { HorizonsTelnetParams, SsdPrompts } from '../common/res/ssdRes';
 
 /**
@@ -63,6 +63,7 @@ export class SSD {
    */
   processRawForMajorBodies(filename) {
     log('Processing raw for major bodies from : ' + chalk.green(filename));
+
   }
 
   /**
@@ -73,7 +74,7 @@ export class SSD {
   getMajorBodiesIndex() {
     log('Generating SSD Data');
     this.getStream(HorizonsTelnetParams, (conn, stream) => {
-      let mbBuffer = new Buffer('Generic');
+      let mbBuffer = new TelnetBuffer('Generic');
 
       let checkStreamForData = streamData => {
         mbBuffer.append(streamData);
@@ -83,7 +84,7 @@ export class SSD {
           mbBuffer.clear();
           log('Querying major bodies database');
           stream.write('MB\n');
-          mbBuffer = new Buffer('MajorBody', 30000);
+          mbBuffer = new TelnetBuffer('MajorBody', 30000);
         } else if (mbBuffer.endsWith('<cr>: ')) {
           mbBuffer.toFile('mb-raw.txt');
           stream.end();
