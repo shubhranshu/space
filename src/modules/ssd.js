@@ -3,6 +3,7 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 
 import { log, logd } from '../common/logger';
+import { ParseMainBodyRaw, Locations } from '../common/fsHelper';
 import TelnetBuffer from '../common/telnetBuffer';
 import { HorizonsTelnetParams, SsdPrompts } from '../common/res/ssdRes';
 
@@ -24,6 +25,9 @@ export class SSD {
           this.getMajorBodiesIndex();
           break;
         case 'DownloadMbData':
+          break;
+        case 'ProcessMbIndex':
+          this.processRawForMajorBodies(Locations.MB_RAW_NAME);
           break;
         default:
           log('Invalid choice ! Restarting !');
@@ -63,7 +67,7 @@ export class SSD {
    */
   processRawForMajorBodies(filename) {
     log('Processing raw for major bodies from : ' + chalk.green(filename));
-
+    ParseMainBodyRaw(filename);
   }
 
   /**
@@ -86,12 +90,12 @@ export class SSD {
           stream.write('MB\n');
           mbBuffer = new TelnetBuffer('MajorBody', 30000);
         } else if (mbBuffer.endsWith('<cr>: ')) {
-          mbBuffer.toFile('mb-raw.txt');
+          mbBuffer.toFile(Locations.MB_RAW_NAME);
           stream.end();
           conn.end();
           logd('Stream ended');
 
-          this.processRawForMajorBodies('mb-raw.txt');
+          this.processRawForMajorBodies(Locations.MB_RAW_NAME);
         }
       };
       stream.on('data', checkStreamForData);

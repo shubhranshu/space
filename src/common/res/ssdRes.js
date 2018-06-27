@@ -1,4 +1,5 @@
 import { GenericOptions } from './mainRes';
+import inquirer from 'inquirer';
 
 export const HorizonsTelnetParams = {
   host: 'horizons.jpl.nasa.gov',
@@ -19,6 +20,11 @@ export const SsdPrompts = {
     {
       name: 'Download | Specific Major body data',
       value: 'DownloadMbData'
+    },
+    new inquirer.Separator(),
+    {
+      name: 'Process | Process Major body index',
+      value: 'ProcessMbIndex'
     },
     ...GenericOptions
   ]
