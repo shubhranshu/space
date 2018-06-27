@@ -36,7 +36,7 @@ export const logd = (message, obj) => {
 // Log to file
 export const logf = (message, fileName) => {
   let msgObj = stringify(message);
-  fs.writeFileSync('./data/temp/' + fileName, message);
+  fs.writeFileSync('./data/temp/' + fileName, msgObj);
 };
 
 // Log progress

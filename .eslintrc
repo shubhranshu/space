@@ -10,8 +10,14 @@
       "node": true
     }
   },
+  "globals": {
+    "process": false,
+    "console": false
+  },
   "rules": {
     "strict": 2,
-    "quotes": ["error", "single"]
+    "quotes": ["error", "single"],
+    "no-console": "off",
+    "no-process-env": "off"
   }
 }
