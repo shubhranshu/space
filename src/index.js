@@ -1,52 +1,9 @@
 import inquirer from 'inquirer';
-import { resolve } from 'path';
-import { rejects } from 'assert';
-import chalk from 'chalk';
 
 import { log, logd } from './common/logger';
 import Help from './common/help';
 import ssd from './modules/ssd';
-
-var types = {
-  input: 'input',
-  confirm: 'confirm',
-  list: 'list',
-  rawlist: 'rawlist',
-  expand: 'expand',
-  checkbox: 'checkbox',
-  password: 'password',
-  editor: 'editor'
-};
-
-var genericOptions = [
-  {
-    name: 'Help',
-    value: 'help'
-  },
-  {
-    name: 'Restart',
-    value: 'restart'
-  },
-  {
-    name: 'Quit',
-    value: 'quit'
-  }
-];
-
-var targetQuestions = {
-  type: 'list',
-  name: 'target',
-  message: 'Source target for data query',
-  help: '',
-  choices: [
-    {
-      name: 'Solar system dynamics',
-      value: 'SSD'
-    },
-    new inquirer.Separator(),
-    ...genericOptions
-  ]
-};
+import { TargetQuestions } from './common/res/mainRes';
 
 function handleGeneric(objName, answers) {
   logd('Handling generics');
@@ -56,11 +13,9 @@ function handleGeneric(objName, answers) {
     case 'help':
       logd('Choice was help !');
       return startUp(2);
-      break;
     case 'restart':
       logd('choice was restart !');
       return startUp(1);
-      break;
     case 'quit':
       logd('Choice is to Quit !');
       return false;
@@ -69,11 +24,11 @@ function handleGeneric(objName, answers) {
 }
 
 function handleTargets(answers) {
-  if (handleGeneric(targetQuestions.name, answers)) {
+  if (handleGeneric(TargetQuestions.name, answers)) {
     logd('Handling targets');
     switch (answers.target) {
       case 'SSD':
-        ssd.getMajorBodiesList()
+        ssd.startup();
         break;
       default:
         log('You didnt select a target ! Restarting...');
@@ -85,14 +40,16 @@ function handleTargets(answers) {
 function startUp(option) {
   switch (option) {
     case 1:
-      console.clear();
       Help.printArt();
+      Help.showHelp();
+      break;
     case 2:
       Help.showHelp();
+      break;
     case 3:
     // this is the regular start !
   }
-  inquirer.prompt(targetQuestions).then(answers => {
+  inquirer.prompt(TargetQuestions).then(answers => {
     handleTargets(answers);
   });
 }

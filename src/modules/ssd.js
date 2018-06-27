@@ -1,21 +1,48 @@
 import Telnet from 'telnet-client';
+import inquirer from 'inquirer';
+import chalk from 'chalk';
 
-import { log, logd, logf, logp } from '../common/logger';
+import { log, logd } from '../common/logger';
 import Buffer from '../common/buffer';
+import { HorizonsTelnetParams, SsdPrompts } from '../common/res/ssdRes';
 
-export const HorizonsTelnetParams = {
-  host: 'horizons.jpl.nasa.gov',
-  port: 6775,
-  shellPrompt: 'Horizons',
-  timeout: 1500
-};
-
+/**
+ * Nasa solar system dynamics interface.
+ *
+ * @export
+ * @class SSD
+ */
 export class SSD {
+  /**
+   * SSD startup with inquirer !
+   * @memberof SSD
+   */
+  startup() {
+    inquirer.prompt(SsdPrompts).then(answers => {
+      switch (answers.operation) {
+        case 'DownloadMbIndex':
+          this.getMajorBodiesIndex();
+          break;
+        case 'DownloadMbData':
+          break;
+        default:
+          log('Invalid choice ! Restarting !');
+          this.startup();
+      }
+    });
+  }
+
+  /**
+   * Utility function to get the telnet stream
+   * @param {*} param Telnet connection paramerters
+   * @param {*} callback The callback function with Telnet connection and Stream as parameters
+   * @memberof SSD
+   */
   getStream(params, callback) {
     log('Connecting to telnet');
     let conn = new Telnet();
     conn.connect(params).then(
-      prompt => {
+      () => {
         log('Connected to HORIZONS telnet, Executing Major body search');
         conn.shell((err, stream) => {
           log('Shell Acquired !');
@@ -28,13 +55,29 @@ export class SSD {
       }
     );
   }
-  getMajorBodiesList() {
+
+  /**
+   * Process the raw index file and save it in data folder
+   * @param {*} filename
+   * @memberof SSD
+   */
+  processRawForMajorBodies(filename) {
+    log('Processing raw for major bodies from : ' + chalk.green(filename));
+  }
+
+  /**
+   * Get the major body index and save it as raw
+   *
+   * @memberof SSD
+   */
+  getMajorBodiesIndex() {
     log('Generating SSD Data');
     this.getStream(HorizonsTelnetParams, (conn, stream) => {
       let mbBuffer = new Buffer('Generic');
 
       let checkStreamForData = streamData => {
         mbBuffer.append(streamData);
+
         if (mbBuffer.contains('Horizons>')) {
           log('HORIZONS prompt reached');
           mbBuffer.clear();
@@ -46,9 +89,10 @@ export class SSD {
           stream.end();
           conn.end();
           logd('Stream ended');
+
+          this.processRawForMajorBodies('mb-raw.txt');
         }
       };
-
       stream.on('data', checkStreamForData);
     });
   }

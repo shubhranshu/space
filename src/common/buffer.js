@@ -1,4 +1,5 @@
 import { log, logf, logd, logp } from './logger';
+import chalk from 'chalk';
 
 export default class Buffer {
   constructor(name, max) {
@@ -28,7 +29,7 @@ export default class Buffer {
     return this._buffer;
   }
   toFile(fileName) {
-    log('writing to file !');
+    log('Writing raw to file ! : ' + chalk.green(fileName));
     logf(this.getData(), fileName);
     this.clear();
   }

@@ -1,8 +1,7 @@
 import fs from 'fs';
 
 import chalk from 'chalk';
-import { log, logd, eloge } from './logger';
-import { throwError } from 'rxjs';
+import { log } from './logger';
 
 export function getHelpData() {
   var fileData = fs.readFileSync('./src/common/help/help.md');
@@ -14,12 +13,12 @@ export function showHelp() {
   log(chalk.red(helpData));
 }
 
-export function printArt(){
-    log('');
-    log('**************************************************************');
-    log('**************** Some badass ASCII art here ******************');
-    log('**************************************************************');
-    log('');
+export function printArt() {
+  log('');
+  log('**************************************************************');
+  log('**************** Some badass ASCII art here ******************');
+  log('**************************************************************');
+  log('');
 }
 
 export default {
