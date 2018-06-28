@@ -30,6 +30,7 @@ export default class TelnetBuffer {
     return this._buffer;
   }
   toFile(fileName) {
+    logp(this.expectedMax, this.expectedMax);
     log('Writing raw to file ! : ' + chalk.green(fileName));
     writeFileToTemp(this.getData(), fileName);
     this.clear();

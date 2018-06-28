@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 const printWidth = 120;
+const dateHeaderWidth = 20;
 
 export const stringify = message => {
   var msgObj = message;
@@ -37,8 +38,10 @@ export const logp = (current, max) => {
   current = current > max ? max : current;
   let progresMsgStart = 'Downloading [';
   let progresMsgEnd = ']';
-  let usableLength = printWidth - GetDateHeader().length - progresMsgStart.length - progresMsgEnd.length;
+  let usableLength = printWidth - dateHeaderWidth - progresMsgStart.length - progresMsgEnd.length;
   let progress = (current / max) * usableLength;
   let progresMsg = progresMsgStart + '*'.repeat(progress) + ' '.repeat(usableLength - progress) + progresMsgEnd;
-  log(chalk.yellow(progresMsg));
+  process.stdout.cursorTo(0);
+  process.stdout.write(GetDateHeader() + chalk.yellow(progresMsg));
+  if(current >= max) process.stdout.write('\n');
 };
