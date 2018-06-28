@@ -5,7 +5,7 @@ const printWidth = 120;
 export const stringify = message => {
   var msgObj = message;
   if (typeof message != 'string') {
-    msgObj = JSON.stringify(message, null, 4);
+    msgObj = JSON.stringify(message, null, 2);
   }
   return msgObj;
 };

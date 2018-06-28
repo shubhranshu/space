@@ -11,7 +11,7 @@ export const FileConstants = {
 export const Locations = {
   MB_RAW_NAME: 'mb-raw.txt',
   MB_DAT_NAME: 'mb-raw.dat',
-  MB_JSON_NAME: 'mb-raw.json',
+  MB_JSON_NAME: 'index-main-body.json',
   TEMP_DATA_DIR: './data/temp/'
 };
 
@@ -40,6 +40,10 @@ export const ParseMainBodyRaw = fileName => {
 
   let colMask = fileArray[1];
   let headers = GetValuesUsingMask(fileArray[0], colMask, true);
+  for (let index = 0; index < headers.length; index++) {
+    headers[index] = headers[index].replace('#', ''); // Remove # from headers
+  }
+
   logd('Headers', headers);
 
   let subArr = fileArray.slice(2, fileArray.length - 2);
@@ -49,12 +53,20 @@ export const ParseMainBodyRaw = fileName => {
     if (values.length == headers.length) {
       let valObj = {};
       for (let index = 0; index < headers.length; index++) {
-        valObj[headers[index]] = values[index];
+        let val = values[index];
+        if (val) {
+          valObj[headers[index]] = val.trim();
+          let numVal = Number.parseInt(val);
+          if (!isNaN(numVal)) {
+            valObj[headers[index]] = numVal;
+          }
+        }
       }
       ssdIndex.push(valObj);
     }
   });
-  writeFileToTemp(ssdIndex, Locations.MB_DAT_NAME);
+  logd(ssdIndex, ssdIndex);
+  writeFileToTemp(ssdIndex, Locations.MB_JSON_NAME);
 };
 
 export const GetValuesUsingMask = (data, mask, trim) => {
