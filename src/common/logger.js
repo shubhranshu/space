@@ -13,7 +13,22 @@ export const stringify = message => {
 
 export const GetDateHeader = () => {
   var d = new Date();
-  return chalk.magenta(d.toLocaleTimeString()) + ' | ' + chalk.green(d.getMilliseconds()) + ' : ';
+  //cater to variable millisecond length time !
+  let milli = d.getMilliseconds().toString();
+  let filler = '';
+  switch (milli.length) {
+    case 0:
+      filler = '  0'; // One in a thousand case !
+      break;
+    case 1:
+      filler = '  ';
+      break;
+    case 2:
+      filler = ' ';
+      break;
+  }
+
+  return chalk.magenta(d.toLocaleTimeString()) + ' | ' + filler + chalk.green(milli) + ' : ';
 };
 
 // Log to console
@@ -43,5 +58,5 @@ export const logp = (current, max) => {
   let progresMsg = progresMsgStart + '*'.repeat(progress) + ' '.repeat(usableLength - progress) + progresMsgEnd;
   process.stdout.cursorTo(0);
   process.stdout.write(GetDateHeader() + chalk.yellow(progresMsg));
-  if(current >= max) process.stdout.write('\n');
+  if (current >= max) process.stdout.write('\n');
 };
