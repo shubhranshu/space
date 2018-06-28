@@ -26,6 +26,15 @@ export const SsdPrompts = {
       name: 'Process | Process Major body index',
       value: 'ProcessMbIndex'
     },
+    new inquirer.Separator(),
+    {
+      name: 'Help | Download Horizons help',
+      value: 'HzHelp'
+    },
+    {
+      name: 'Help | Download Horizons help (Extended)',
+      value: 'HzHelpExtended'
+    },
     ...GenericOptions
   ]
 };

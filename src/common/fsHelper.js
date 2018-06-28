@@ -9,6 +9,8 @@ export const FileConstants = {
 };
 
 export const Locations = {
+  HELP_RAW_NAME: 'hz-help.txt',
+  HELP_EXTENDED_RAW_NAME:'hz-extended-help.txt',
   MB_RAW_NAME: 'mb-raw.txt',
   MB_DAT_NAME: 'mb-raw.dat',
   MB_JSON_NAME: 'index-main-body.json',
